@@ -1,0 +1,5 @@
+node_modules
+Mai-SESSION
+yarn-error.log
+package-lock.json
+yarn.lock

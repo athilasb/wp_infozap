@@ -1,0 +1,19 @@
+{
+    "name": "Mai",
+    "description": "A whatsApp bot ",
+    "repository": "",
+    "logo": "",
+    "keywords": ["nodejs", "bot", "whatsapp bot", "whatsapp automation", "multi device"],
+    "buildpacks": [
+      {
+        "url": "heroku/nodejs"
+      }
+    ],
+     "formation": {
+          "worker": {
+              "quantity": 1,
+              "size": "eco"
+          }
+      }
+  }
+  
