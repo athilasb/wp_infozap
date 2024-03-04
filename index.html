@@ -25,7 +25,7 @@
 
     <script>
         $(document).ready(function () {
-            var socket = io.connect('');
+            var socket = io.connect();
 
             socket.on('qr', function (url) { // Corrija aqui para receber o URL do QR code
                 $('#qrcode').attr('src', url).show();
@@ -38,7 +38,7 @@
 
             // Evento para atualizar o status da conexão
             socket.on('connection-status', function (status) {
-                if (status === 'connected') {
+                if (status === 'conectado') {
                     $('#qrcode').hide();
                     $('.logs').html($('<li>').text("WhatsApp Connected"));
                 } else if (status === 'disconnected') {

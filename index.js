@@ -41,14 +41,11 @@ async function startMai() {
   Mai = MaiConnect({
     logger: pino({ level: "silent" }),
     printQRInTerminal: false, // Desabilitado aqui, pois vamos usar qrcode-terminal para exibir
-    browser: ["infozap", "Safari", "3.O"],
+    browser: ["InfoZap Pro", "", "3.O"],
     auth: state,
   });
-
   // Lidando com a atualização das credenciais
   Mai.ev.on("creds.update", saveCreds);
-
-
   // Lidando com a atualização da conexão
   Mai.ev.on("connection.update", (update) => {
     const { connection, lastDisconnect, qr } = update;
@@ -73,7 +70,7 @@ async function startMai() {
       status = "Conectado ao WhatsApp.";
       console.log("Bot está ativo!");
       io.emit('qr', "");
-      io.emit('connection-status', 'connected');
+      io.emit('connection-status', 'conectado');
     }
     if (connection === "close") {
       let reason = lastDisconnect.error
@@ -144,46 +141,48 @@ async function startMai() {
       }
     }
   });
-
   return Mai
-
 }
 
 app.post('/ajax', async (req, res) => {
   // Extrair número e mensagem do corpo da solicitação
   const { ajax, number, message } = req.body;
   if (ajax === "send-message") {
-    if (!message || message.trim() === "") {
-      // Retorna uma resposta JSON indicando falha e uma mensagem de erro
-      return res.json({ success: false, message: "Mensagem vazia." });
-    } else {
-      try {
-        const sendMessageResponse = await Mai.sendMessage(number + "@s.whatsapp.net", { text: message });
-        // Verificar se a mensagem foi enviada com sucesso e responder ao frontend
-        if (sendMessageResponse) {
-          res.json({ success: true, message: "Mensagem enviada com sucesso!" });
-        } else {
-          res.status(500).json({ success: false, message: "Falha ao enviar mensagem." });
+    if (Mai) {
+      if (!message || message.trim() === "") {
+        // Retorna uma resposta JSON indicando falha e uma mensagem de erro
+        return res.json({ success: false, message: "Mensagem vazia." });
+      } else {
+        try {
+          const sendMessageResponse = await Mai.sendMessage(number + "@s.whatsapp.net", { text: message });
+          // Verificar se a mensagem foi enviada com sucesso e responder ao frontend
+          if (sendMessageResponse) {
+            res.json({ success: true, message: "Mensagem enviada com sucesso!" });
+          } else {
+            res.status(500).json({ success: false, message: "Falha ao enviar mensagem." });
+          }
+        } catch (error) {
+          console.error('Erro ao enviar mensagem:', error);
+          res.status(500).json({ success: false, message: "Erro ao enviar mensagem." });
         }
-      } catch (error) {
-        console.error('Erro ao enviar mensagem:', error);
-        res.status(500).json({ success: false, message: "Erro ao enviar mensagem." });
       }
+    } else {
+      res.status(500).json({ success: false, message: "Sessão não conectado." });
     }
   } else if (ajax === "qrcode") {
-      if (Mai) {
-        // Certifique-se de que Mai não é undefined antes de chamar logout
-        try {
-          await Mai.logout(); // Desconectar a sessão atual antes de deletar
-          console.log("Sessão desconectada com sucesso.");
-        } catch (error) {
-          console.error("Erro ao desconectar a sessão:", error);
-        }
-      }else{
-        deleteSession(); // Deletar a sessão após a desconexão
-        Mai = await startMai(); // Reiniciar Mai após deletar a sessão
-        res.json({ success: true, message: "QRCode gerado com sucesso!" });
+    if (Mai) {
+      // Certifique-se de que Mai não é undefined antes de chamar logout
+      try {
+        await Mai.logout(); // Desconectar a sessão atual antes de deletar
+        console.log("Sessão desconectada com sucesso.");
+      } catch (error) {
+        console.error("Erro ao desconectar a sessão:", error);
       }
+    } else {
+      deleteSession(); // Deletar a sessão após a desconexão
+      Mai = await startMai(); // Reiniciar Mai após deletar a sessão
+      res.json({ success: true, message: "QRCode gerado com sucesso!" });
+    }
   } else {
     res.status(400).json({ success: false, message: "Requisição inválida." });
   }
