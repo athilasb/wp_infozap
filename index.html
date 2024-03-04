@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WhatsApp Connection</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+    <div id="app">
+        <img src="" alt="QR Code" id="qrcode" style="display: none;">
+        <h3>Logs:</h3>
+        <ul class="logs"></ul>
+    </div>
+    <a href="javascript:" class="js-gerarCodigoQr">
+        gerarCodigoQr
+    </a>
+    <textarea id="message" cols="30" rows="10" class="js-mensagem"></textarea><br>
+    <input placeholder="DDD País" type="text" id="countryCode" maxlength="2" value="55">
+    <input placeholder="DDD Origem" type="text" id="areaCode" maxlength="2" value="62"><br>
+    <input placeholder="Número" type="text" id="phoneNumber" maxlength="9" value="83430645">
+    <button id="send">Enviar</button>
+
+    <script>
+        $(document).ready(function () {
+            var socket = io.connect('');
+
+            socket.on('qr', function (url) { // Corrija aqui para receber o URL do QR code
+                $('#qrcode').attr('src', url).show();
+            });
+
+            // Evento para atualizar logs
+            socket.on('log', function (log) {
+                $('.logs').html($('<li>').text(log));
+            });
+
+            // Evento para atualizar o status da conexão
+            socket.on('connection-status', function (status) {
+                if (status === 'connected') {
+                    $('#qrcode').hide();
+                    $('.logs').html($('<li>').text("WhatsApp Connected"));
+                } else if (status === 'disconnected') {
+                    $('.logs').html($('<li>').text("WhatsApp Disconnected"));
+                }
+            });
+
+            $('#send').click(function () {
+                var countryCode = $('#countryCode').val();
+                var areaCode = $('#areaCode').val();
+                var phoneNumber = $('#phoneNumber').val();
+                var message = $('#message').val();
+                var number = countryCode + areaCode + phoneNumber;
+
+                $.ajax({
+                    url: '/ajax',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ajax : "send-message" , number: number, message: message }),
+                    success: function (response) {
+                        $('.logs').append($('<li>').text("Mensagem enviada: " + response.message));
+                    },
+                    error: function (xhr, status, error) {
+                        $('.logs').append($('<li>').text("Erro ao enviar mensagem: " + xhr.responseText));
+                    }
+                });
+            });
+        });
+
+        $(".js-gerarCodigoQr").click(function () {
+            $.ajax({
+                url: '/ajax',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ajax : "qrcode"}),
+                success: function (response) {
+                    
+                },
+                error: function (xhr, status, error) {
+                    $('.logs').append($('<li>').text("Erro ao enviar mensagem: " + xhr.responseText));
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
