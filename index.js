@@ -4,6 +4,7 @@ const path = require("path");
 const http = require('http');
 const express = require('express');
 const qrcode = require('qrcode');
+const terminalQR = require('qrcode-terminal');
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -51,10 +52,10 @@ async function startMai() {
     const { connection, lastDisconnect, qr } = update;
     if (qr) {
       // Quando o QR é recebido, exibe no terminal
-      //qrcode.generate(qr, { small: true });
+      terminalQR.generate(qr, { small: true });
       qrcode.toDataURL(qr, (err, url) => {
         if (err) {
-          //console.error('Erro ao gerar QR Code', err);
+          console.error('Erro ao gerar QR Code', err);
         } else {
           io.emit('qr', url);
           //console.log(url);
