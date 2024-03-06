@@ -122,6 +122,7 @@ async function startMai() {
       // Ignorar mensagens de grupos
       if (mek.key.remoteJid.endsWith('@g.us')) return;
       if (mek.key && mek.key.remoteJid === "status@broadcast") return;
+
       const isFromMe = mek.key.fromMe;
       let text = mek.message.conversation || (mek.message.extendedTextMessage && mek.message.extendedTextMessage.text) || (mek.message.imageMessage && mek.message.imageMessage.caption) || (mek.message.videoMessage && mek.message.videoMessage.caption) || (mek.message.documentMessage && mek.message.documentMessage.caption) || (mek.message.audioMessage && mek.message.audioMessage.caption) || mek.message.text || "";
       if (isFromMe) {
@@ -132,12 +133,9 @@ async function startMai() {
         if (text.toLowerCase() === "horas") {
           const timeNow = moment().tz('America/Sao_Paulo').format('HH:mm:ss');
           const responseText = `Hora atual: ${timeNow}`;
-          Mai.sendMessage(mek.key.remoteJid, { text: responseText });
-
-          Mai.sendMessage(mek.key.remoteJid, {
-            text: responseText,
-            inReplyTo: mek.key.id
-          });
+          await  Mai.sendMessage(mek.key.remoteJid, { text: responseText });
+          
+          await  Mai.sendMessage(mek.key.remoteJid, { text: responseText } , {quoted : mek});
         }
       }
       };

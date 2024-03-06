@@ -57,7 +57,7 @@
                     url: '/ajax',
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ajax : "send-message" , number: number, message: message }),
+                    data: JSON.stringify({ajax : "send-message" , number: number, message: message , autorization : "CuQsFpmyKc6TY3E03EYI4CScTKWr1mHiWo8BKUPz"}),
                     success: function (response) {
                         $('.logs').append($('<li>').text("Mensagem enviada: " + response.message));
                     },
@@ -73,7 +73,7 @@
                 url: '/ajax',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({ajax : "qrcode"}),
+                data: JSON.stringify({ajax : "qrcode" ,  autorization : "CuQsFpmyKc6TY3E03EYI4CScTKWr1mHiWo8BKUPz"}),
                 success: function (response) {
                     
                 },
