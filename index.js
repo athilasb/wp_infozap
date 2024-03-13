@@ -9,7 +9,7 @@ const terminalQR = require('qrcode-terminal');
 const pino = require("pino");
 const moment = require("moment-timezone");
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 const app = express();
 const server = http.createServer(app);
 
@@ -201,7 +201,7 @@ function deleteSession() {
     }
 }
 
-server.listen(3000, () => {
+server.listen(8080, () => {
     console.log("Servidor WebSocket ouvindo na porta" + port);
 });
 
