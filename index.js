@@ -75,6 +75,7 @@ async function startMai() {
             console.log("Bot está ativo!");
             io.emit('qr', "");
             io.emit('connection-status', 'conectado');
+            desconhecido = 0;
         }
         if (connection === "close") {
             let reason = lastDisconnect.error
@@ -112,7 +113,7 @@ async function startMai() {
             } else {
                 console.log(`Motivo de desconexão desconhecido: ${reason}|${connection}`);
                 if(desconhecido >= 3){
-                    deleteSession()
+                    deleteSession();
                     startMai();
                 }else{
                     startMai();
