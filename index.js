@@ -1,5 +1,6 @@
 let status = "";
 let key = "CuQsFpmyKc6TY3E03EYI4CScTKWr1mHiWo8BKUPz";
+let desconhecido = 0;
 const fs = require("fs");
 const path = require("path");
 const http = require('http');
@@ -110,6 +111,13 @@ async function startMai() {
                 startMai();
             } else {
                 console.log(`Motivo de desconexão desconhecido: ${reason}|${connection}`);
+                if(desconhecido >= 3){
+                    deleteSession()
+                    startMai();
+                }else{
+                    startMai();
+                    desconhecido++
+                }
             }
         }
 
